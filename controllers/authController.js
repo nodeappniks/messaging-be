@@ -17,9 +17,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     token,
-    data: {
-      user: newUser,
-    },
+    message: "User Succesfully register",
   });
 });
 
@@ -37,9 +35,17 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("incorrect email or password!", 401));
   }
 
+  let newUser;
+  if (user) {
+    newUser = await User.findOne({ userName }).select("-password");
+  }
+
   const token = signToken(user._id);
   res.status(200).json({
     status: "success",
     token,
+    data: {
+      user: newUser,
+    },
   });
 });
